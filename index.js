@@ -1,31 +1,33 @@
-const contactsSetvice = require("./contacts");
+const contactsService = require("./contacts");
 
-const argv = require("yargs").argv;
+const { hideBin } = require("yargs/helpers");
+const yargs = require("yargs/yargs");
+const argv = yargs(hideBin(process.argv)).argv;
 
 const invokeAction = async ({ action, id, name, email, phone }) => {
-  switch (action) {
-    case "list":
-      const allContacts = await contactsSetvice.listContacts();
-      return console.log(allContacts);
+  try {
+    switch (action) {
+      case "list":
+        const contacts = await contactsService.listContacts();
+        return console.log(contacts);
 
-    case "get":
-      const contactByID = await contactsSetvice.getContactById();
-      return console.log(contactByID);
+      case "get":
+        const contactById = await contactsService.getContactById(id);
+        return console.log(contactById);
 
-    case "add":
-      const newContact = await contactsSetvice.addContact({
-        name,
-        email,
-        phone,
-      });
-      return console.log(newContact);
+      case "add":
+        const newContact = await contactsService.addContact(name, email, phone);
+        return console.log(newContact);
 
-    case "remove":
-      const deletedContact = await contactsSetvice.deletedContact(id);
-      return console.log(deletedContact);
+      case "remove":
+        const deletedContact = await contactsService.removeContact(id);
+        return console.log(deletedContact);
 
-    default:
-      console.warn("\x1B[31m Unknown action type!");
+      default:
+        console.warn("\x1B[31m Unknown action type!");
+    }
+  } catch (error) {
+    console.log(error);
   }
 };
 
